@@ -1,0 +1,52 @@
+import { Link } from "react-router-dom";
+import { Search, ShoppingCart, X } from "lucide-react";
+
+const Header = ({ page }: { page: string }) => {
+  return (
+    <header className="flex w-full items-center border-b-1 border-slate-800 p-8 font-mono">
+      <h1 className="text-4xl font-black">
+        GameCache<span className="text-orange-400">+</span>
+      </h1>
+      <nav className="flex gap-4 px-12 text-xl text-slate-400">
+        <Link
+          {...(page == "home" && { "data-active": "" })}
+          className="border-b-1 border-white/0 p-4 hover:border-slate-700 data-[active]:border-orange-400 data-[active]:text-slate-200"
+          to="home"
+        >
+          Home
+        </Link>
+        <Link
+          {...(page == "store" && { "data-active": "" })}
+          className="border-b-1 border-white/0 p-4 hover:border-slate-700 data-[active]:border-orange-400 data-[active]:text-slate-200"
+          to="store"
+        >
+          Store
+        </Link>
+      </nav>
+      <div className="flex grow-1 justify-end gap-4">
+        <div className="relative">
+          <input
+            type="text"
+            className="w-64 rounded-full border-1 border-slate-600 px-12 py-2 font-sans outline-slate-400 transition-[width] duration-300 ease-in-out placeholder:text-slate-500 focus:w-88 focus:outline-1"
+            placeholder="Search"
+          />
+          <Search className="absolute top-1/2 left-4 w-6 -translate-y-1/2 stroke-slate-600" />
+          <X className="absolute top-1/2 right-4 w-6 -translate-y-1/2 cursor-pointer stroke-slate-400" />
+        </div>
+        <div
+          className={`cart-items group cart transition-gap relative flex h-10 cursor-pointer items-center gap-0 rounded-full border-1 border-slate-600 px-4 duration-300 ease-in-out [.cart-items]:gap-2`}
+        >
+          <div className="flex w-0 justify-center transition-all duration-300 ease-in-out group-[.cart-items]:w-4">
+            <p className="text-slate-400 not-group-[.cart-items]:hidden group-[.cart:hover]:text-slate-200">1</p>
+          </div>
+          <div className="relative">
+            <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-orange-400 not-group-[.cart-items]:hidden" />
+            <ShoppingCart className="w-6 stroke-slate-400 stroke-1 group-hover:stroke-slate-200" />
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
