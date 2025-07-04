@@ -1,7 +1,18 @@
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, ShoppingCart, X } from "lucide-react";
 
 const Header = ({ page }: { page: string }) => {
+  const [search, setSearch] = useState("");
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+
+  const handleClearSearch = () => {
+    setSearch("");
+  };
+
   return (
     <header className="flex w-full items-center border-b-1 border-slate-800 p-8 font-mono">
       <h1 className="text-4xl font-black">
@@ -27,11 +38,16 @@ const Header = ({ page }: { page: string }) => {
         <div className="relative">
           <input
             type="text"
-            className="w-64 rounded-full border-1 border-slate-600 px-12 py-2 font-sans outline-slate-400 transition-[width] duration-300 ease-in-out placeholder:text-slate-500 focus:w-88 focus:outline-1"
+            className={`${search == "" ? "" : "searching"} peer w-64 rounded-full border-1 border-slate-600 px-12 py-2 font-sans outline-slate-400 transition-[width] duration-300 ease-in-out placeholder:text-slate-500 focus:w-88 focus:outline-1 [.searching]:w-88`}
             placeholder="Search"
+            value={search}
+            onChange={handleSearch}
           />
           <Search className="absolute top-1/2 left-4 w-6 -translate-y-1/2 stroke-slate-600" />
-          <X className="absolute top-1/2 right-4 w-6 -translate-y-1/2 cursor-pointer stroke-slate-400" />
+          <X
+            className="absolute top-1/2 right-4 w-6 -translate-y-1/2 cursor-pointer stroke-slate-400 not-peer-[.searching]:not-peer-focus:hidden"
+            onClick={handleClearSearch}
+          />
         </div>
         <div
           className={`cart-items group cart transition-gap relative flex h-10 cursor-pointer items-center gap-0 rounded-full border-1 border-slate-600 px-4 duration-300 ease-in-out [.cart-items]:gap-2`}
