@@ -1,8 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
+import { RouterProvider, createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import App from "./App";
+import Store from "./components/Store";
 
 const routes = [
   {
@@ -20,20 +22,33 @@ const routes = [
       },
       {
         path: "store",
-        element: <p>This is the store!</p>,
+        element: <Outlet />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="1" />,
+          },
+          {
+            path: ":page",
+            element: <Store />,
+          },
+        ],
       },
-      {
-        path: "*",
-        element: <Navigate to="/home" />,
-      },
+      // {
+      //   path: "*",
+      //   element: <Navigate to="/home" />,
+      // },
     ],
   },
 ];
 
+const queryClient = new QueryClient();
 const router = createBrowserRouter(routes);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </StrictMode>,
 );
