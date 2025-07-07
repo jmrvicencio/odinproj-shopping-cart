@@ -1,13 +1,15 @@
 import { data, Outlet, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Star, StarHalf, Check, ChevronDown, ChevronUp } from "lucide-react";
+import GenreFilter from "./GenreFilter";
 import GameItem from "./GameItem";
 import React, { useState } from "react";
 
 const Store = () => {
   const { page } = useParams();
-  const [genreFilter, setGenresFilter] = useState<Record<number, boolean>>({ 0: false });
-  const [genres, setGenres] = useState([]);
+  const [genres, setGenres] = useState<Record<string, boolean>>({});
+  const [filterGenres, setFilterGenres] = useState(false);
+  // const [genres, setGenres] = useState<Set<String>>(new Set());
   const [showGenre, setShowGenre] = useState(true);
   const [stars, setStars] = useState(0);
   const [hoverStars, setHoverStars] = useState(0);
@@ -18,6 +20,12 @@ const Store = () => {
     queryFn: async ({ signal }) => {
       const res = await fetch("https://jsonfakery.com/games/random/50", { mode: "cors", signal });
       const data = await res.json();
+      const newGenres: Record<string, boolean> = {};
+      data.forEach((item: { genres: Array<{ name: string }> }, i: number) => {
+        const currGenre = item.genres[0] ? item.genres[0].name : "unkown";
+        newGenres[currGenre] = false;
+      });
+      setGenres(newGenres);
       return data;
     },
   });
@@ -43,10 +51,17 @@ const Store = () => {
     setStars(hoverStars);
   };
 
-  const handleGenres = (e: React.MouseEvent, id: number) => {
-    console.log(genreFilter);
-    setGenresFilter({ ...genreFilter, [id]: !genreFilter[id] });
+  const handleGenres = (e: React.MouseEvent, genre: string) => {
+    const newGenres = { ...genres, [genre]: !genres[genre] };
+    setFilterGenres(
+      Object.values(newGenres).some((val) => {
+        return val == true;
+      }),
+    );
+    setGenres(newGenres);
   };
+
+  console.log(filterGenres);
 
   return (
     <>
@@ -57,21 +72,10 @@ const Store = () => {
               <h2 className="text-lg font-bold">Genre</h2>
               {showGenre ? <ChevronDown /> : <ChevronUp />}
             </div>
-            <div
-              onClick={(e) => handleGenres(e, 0)}
-              className="flex w-full cursor-pointer flex-row items-center gap-2 rounded-md px-4 py-2 hover:bg-slate-800"
-            >
-              <div className="flex flex-row">
-                <input type="checkbox" className="peer hidden" onChange={() => {}} checked={genreFilter[0]} />
-                <div className="group h-4.25 w-4.25 rounded-sm border-1 border-slate-600 peer-checked:bg-slate-300">
-                  {genreFilter[0] && <Check className="h-full w-full stroke-slate-900 peer-checked:hidden" />}
-                </div>
-              </div>
-              <p>Horror</p>
-            </div>
+            {showGenre && <GenreFilter genres={genres} handleGenres={handleGenres} />}
           </div>
           <div className="flex flex-col gap-1">
-            <h2 className="text-lg font-bold">Rating</h2>
+            <h2 className="pb-2 text-lg font-bold">Rating</h2>
             <div className="flex flex-row gap-2">
               <div className="flex flex-row" onMouseLeave={handleRatingLeave} onClick={handleRatingClick}>
                 <div className="relative h-6 w-6" onMouseMove={(e) => handleRatingMouseMove(e, 0)}>
@@ -124,16 +128,11 @@ const Store = () => {
                     i: number,
                   ) => {
                     const rating: number = game.rating ? parseInt(game.rating) : 0;
+                    const genre: string = game.genres[0] ? game.genres[0].name : "unkown";
                     if (rating < stars) return null;
+                    if (filterGenres && !genres[genre]) return null;
                     return (
-                      <GameItem
-                        key={game.id}
-                        id={i}
-                        title={game.name}
-                        image={game.background_image}
-                        rating={game.rating}
-                        genre={game.genres[0]?.name}
-                      />
+                      <GameItem key={game.id} id={i} title={game.name} image={game.background_image} rating={game.rating} genre={genre} />
                     );
                   },
                 )}
