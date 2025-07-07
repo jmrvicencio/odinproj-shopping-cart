@@ -1,13 +1,11 @@
 import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, Star } from "lucide-react";
 
-const GameItem = ({ title, image, genre, id }: { title: string; image: string; genre: string; id: number }) => {
+const GameItem = ({ title, image, genre, rating, id }: { title: string; image: string; genre: string; rating: string; id: number }) => {
   const [amt, setAmt] = useState(0);
   const [isAdded, setIsAdded] = useState(false);
   const amtField = useRef<HTMLInputElement>(null);
-
-  console.log(id);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currAmt = e.target.value;
@@ -59,7 +57,7 @@ const GameItem = ({ title, image, genre, id }: { title: string; image: string; g
   return (
     <div className="group item relative cursor-pointer">
       <div
-        className="group transition-scale aspect-16/9 w-full scale-100 overflow-hidden rounded-2xl bg-slate-800 bg-cover duration-300 ease-in-out group-hover:scale-104"
+        className="group transition-scale aspect-16/9 w-full scale-100 overflow-hidden rounded-2xl bg-slate-800 bg-cover duration-200 ease-in-out group-hover:scale-104"
         style={bgStyle}
       >
         <div
@@ -69,7 +67,13 @@ const GameItem = ({ title, image, genre, id }: { title: string; image: string; g
       </div>
       <h3 className="mt-2 text-xl font-bold">{title}</h3>
       <div className="relative flex flex-row justify-between pb-4">
-        <p className="font-semibold text-slate-400 uppercase">{genre ? genre : "Unkown"}</p>
+        <div className="flex flex-col">
+          <p className="font-semibold text-slate-400 uppercase">{genre ? genre : "Unkown"}</p>
+          <div className="flex flex-row items-center gap-1">
+            <Star className="h-4 w-4 stroke-slate-400" />
+            <p className="text-slate-400">{rating}</p>
+          </div>
+        </div>
         <div
           className={`group ${isAdded && "is-added"} absolute top-4 right-0 overflow-hidden rounded-full border-1 border-slate-500 px-1 opacity-0 transition-all duration-300 ease-in-out not-[.is-added]:border-orange-500 group-[.item:hover]:top-2 group-[.item:hover]:opacity-100 [.is-added]:top-2 [.is-added]:opacity-100`}
         >
