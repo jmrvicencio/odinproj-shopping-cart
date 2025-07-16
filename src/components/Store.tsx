@@ -1,18 +1,21 @@
+import React, { useState, useContext } from "react";
 import { data, Outlet, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Star, StarHalf, Check, ChevronDown, ChevronUp } from "lucide-react";
 import GenreFilter from "./GenreFilter";
 import GameItem from "./GameItem";
-import React, { useState } from "react";
+import { GenreContext } from "../App";
 
 const Store = () => {
   const { page } = useParams();
-  const [genres, setGenres] = useState<Record<string, boolean>>({});
+  const { genres, setGenres } = useContext(GenreContext);
+  // const [genres, setGenres] = useState<Record<string, boolean>>({});
   const [filterGenres, setFilterGenres] = useState(false);
-  // const [genres, setGenres] = useState<Set<String>>(new Set());
   const [showGenre, setShowGenre] = useState(true);
   const [stars, setStars] = useState(0);
   const [hoverStars, setHoverStars] = useState(0);
+
+  console.log(genres);
 
   const { data: games, isLoading } = useQuery({
     queryKey: ["games"],
@@ -21,10 +24,12 @@ const Store = () => {
       const res = await fetch("https://jsonfakery.com/games/random/50", { mode: "cors", signal });
       const data = await res.json();
       const newGenres: Record<string, boolean> = {};
+
       data.forEach((item: { genres: Array<{ name: string }> }, i: number) => {
         const currGenre = item.genres[0] ? item.genres[0].name : "unkown";
         newGenres[currGenre] = false;
       });
+
       setGenres(newGenres);
       return data;
     },
@@ -61,8 +66,6 @@ const Store = () => {
     setGenres(newGenres);
   };
 
-  console.log(filterGenres);
-
   return (
     <>
       <div className="flex w-full grow-1 flex-row">
@@ -78,31 +81,13 @@ const Store = () => {
             <h2 className="pb-2 text-lg font-bold">Rating</h2>
             <div className="flex flex-row gap-2">
               <div className="flex flex-row" onMouseLeave={handleRatingLeave} onClick={handleRatingClick}>
-                <div className="relative h-6 w-6" onMouseMove={(e) => handleRatingMouseMove(e, 0)}>
-                  {hoverStars == 0.5 && <StarHalf className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
-                  {hoverStars >= 1 && <Star className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
-                  <Star className="absolute inset-0 z-0 h-full w-full fill-slate-600 stroke-none" />
-                </div>
-                <div className="relative h-6 w-6" onMouseMove={(e) => handleRatingMouseMove(e, 1)}>
-                  {hoverStars == 1.5 && <StarHalf className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
-                  {hoverStars >= 2 && <Star className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
-                  <Star className="absolute inset-0 z-0 h-full w-full fill-slate-600 stroke-none" />
-                </div>
-                <div className="relative h-6 w-6" onMouseMove={(e) => handleRatingMouseMove(e, 2)}>
-                  {hoverStars == 2.5 && <StarHalf className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
-                  {hoverStars >= 3 && <Star className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
-                  <Star className="absolute inset-0 z-0 h-full w-full fill-slate-600 stroke-none" />
-                </div>
-                <div className="relative h-6 w-6" onMouseMove={(e) => handleRatingMouseMove(e, 3)}>
-                  {hoverStars == 3.5 && <StarHalf className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
-                  {hoverStars >= 4 && <Star className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
-                  <Star className="absolute inset-0 z-0 h-full w-full fill-slate-600 stroke-none" />
-                </div>
-                <div className="relative h-6 w-6" onMouseMove={(e) => handleRatingMouseMove(e, 4)}>
-                  {hoverStars == 4.5 && <StarHalf className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
-                  {hoverStars >= 5 && <Star className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
-                  <Star className="absolute inset-0 z-0 h-full w-full fill-slate-600 stroke-none" />
-                </div>
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="relative h-6 w-6" onMouseMove={(e) => handleRatingMouseMove(e, i)}>
+                    {hoverStars == i + 0.5 && <StarHalf className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
+                    {hoverStars == i + 1 && <StarHalf className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
+                    <Star className="absolute inset-0 z-0 h-full w-full fill-slate-600 stroke-none" />
+                  </div>
+                ))}
               </div>
               <p className="text-slate-400"> {stars == 0 ? "any" : stars}</p>
             </div>
@@ -129,8 +114,11 @@ const Store = () => {
                   ) => {
                     const rating: number = game.rating ? parseInt(game.rating) : 0;
                     const genre: string = game.genres[0] ? game.genres[0].name : "unkown";
+
+                    // filters to hide game if the filter criteria are not met
                     if (rating < stars) return null;
                     if (filterGenres && !genres[genre]) return null;
+
                     return (
                       <GameItem key={game.id} id={i} title={game.name} image={game.background_image} rating={game.rating} genre={genre} />
                     );

@@ -3,6 +3,7 @@ import { Check } from "lucide-react";
 const GenreFilter = ({ genres, handleGenres }: { genres: Record<string, boolean>; handleGenres: Function }) => {
   return Object.keys(genres).map((genre, i) => (
     <div
+      key={i}
       onClick={(e) => handleGenres(e, genre)}
       className="flex w-full cursor-pointer flex-row items-center gap-2 rounded-md px-4 py-2 hover:bg-slate-800"
     >
