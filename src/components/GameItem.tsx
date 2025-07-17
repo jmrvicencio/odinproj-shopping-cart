@@ -1,27 +1,32 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Plus, Minus, Star } from "lucide-react";
+import { CartContext } from "../App";
 
 const GameItem = ({ title, image, genre, rating, id }: { title: string; image: string; genre: string; rating: string; id: number }) => {
+  const { cartItems, setCartItems } = useContext(CartContext);
+  const currAmt = cartItems[id] ?? 0;
   const [amt, setAmt] = useState(0);
   const [isAdded, setIsAdded] = useState(false);
   const amtField = useRef<HTMLInputElement>(null);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const currAmt = e.target.value;
+    const newAmt: string = e.target.value;
+    const newCartItems: Record<number, number> = { ...cartItems };
 
-    if (currAmt == "") {
-      setAmt(0);
-    }
-    if (/^\d+$/.test(currAmt)) {
-      const currInt = parseInt(currAmt);
+    if (newAmt == "") {
+      delete newCartItems[id];
+    } else if (/^\d+$/.test(newAmt)) {
+      const currInt = parseInt(newAmt);
 
       if (currInt >= 100) {
-        setAmt(99);
+        newCartItems[id] = 99;
       } else {
-        setAmt(parseInt(currAmt));
+        newCartItems[id] = currInt;
       }
     }
+
+    setCartItems(newCartItems);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -29,21 +34,31 @@ const GameItem = ({ title, image, genre, rating, id }: { title: string; image: s
       const inputAmt = amtField.current ? amtField.current.value : "0";
 
       amtField.current?.blur();
-      if (parseInt(inputAmt) == 0) setIsAdded(false);
+      if (parseInt(inputAmt) == 0) {
+        setIsAdded(false);
+
+        const newCartItems = { ...cartItems };
+        delete newCartItems[id];
+        setCartItems(newCartItems);
+      }
     }
   };
 
   const handleAdd = () => {
-    setAmt(amt + 1);
+    const newAmt = currAmt + 1;
+    const newCartItems = { ...cartItems, [id]: newAmt };
+    setCartItems(newCartItems);
     setIsAdded(true);
   };
 
   const handleSubtract = () => {
-    const currAmt = amt - 1;
-    setAmt(currAmt);
-    if (currAmt == 0) {
+    const newAmt = currAmt - 1;
+    const newCartItems = { ...cartItems, [id]: newAmt };
+    if (newAmt == 0) {
+      delete newCartItems[id];
       setIsAdded(false);
     }
+    setCartItems(newCartItems);
   };
 
   const bgStyle = {
@@ -86,7 +101,7 @@ const GameItem = ({ title, image, genre, rating, id }: { title: string; image: s
               type="text"
               className={`${!isAdded && "hidden"} w-8 items-center border-r-1 border-l-1 border-slate-500 text-center outline-none`}
               onChange={handleInput}
-              value={amt}
+              value={currAmt}
               onKeyDown={handleKeyDown}
             />
             <Plus className="h-6 w-4 min-w-4 not-group-[.is-added]:stroke-orange-500" onClick={handleAdd} />
