@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import App from "./App";
 import Store from "./components/Store";
+import Home from "./components/Home";
 
 const routes = [
   {
@@ -18,7 +19,7 @@ const routes = [
       },
       {
         path: "home",
-        element: <p>This is home!</p>,
+        element: <Home />,
       },
       {
         path: "store",
@@ -34,10 +35,6 @@ const routes = [
           },
         ],
       },
-      // {
-      //   path: "*",
-      //   element: <Navigate to="/home" />,
-      // },
     ],
   },
 ];
