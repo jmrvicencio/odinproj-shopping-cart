@@ -7,7 +7,7 @@ const GameItem = ({ title, image, genre, rating, id }: { title: string; image: s
   const { cartItems, setCartItems } = useContext(CartContext);
   const currAmt = cartItems[id] ?? 0;
   const [amt, setAmt] = useState(0);
-  const [isAdded, setIsAdded] = useState(false);
+  const isAdded = cartItems[id] != null ? true : false;
   const amtField = useRef<HTMLInputElement>(null);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -15,7 +15,7 @@ const GameItem = ({ title, image, genre, rating, id }: { title: string; image: s
     const newCartItems: Record<number, number> = { ...cartItems };
 
     if (newAmt == "") {
-      delete newCartItems[id];
+      newCartItems[id] = 0;
     } else if (/^\d+$/.test(newAmt)) {
       const currInt = parseInt(newAmt);
 
@@ -35,8 +35,6 @@ const GameItem = ({ title, image, genre, rating, id }: { title: string; image: s
 
       amtField.current?.blur();
       if (parseInt(inputAmt) == 0) {
-        setIsAdded(false);
-
         const newCartItems = { ...cartItems };
         delete newCartItems[id];
         setCartItems(newCartItems);
@@ -48,7 +46,6 @@ const GameItem = ({ title, image, genre, rating, id }: { title: string; image: s
     const newAmt = currAmt + 1;
     const newCartItems = { ...cartItems, [id]: newAmt };
     setCartItems(newCartItems);
-    setIsAdded(true);
   };
 
   const handleSubtract = () => {
@@ -56,7 +53,6 @@ const GameItem = ({ title, image, genre, rating, id }: { title: string; image: s
     const newCartItems = { ...cartItems, [id]: newAmt };
     if (newAmt == 0) {
       delete newCartItems[id];
-      setIsAdded(false);
     }
     setCartItems(newCartItems);
   };
