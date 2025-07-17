@@ -9,13 +9,10 @@ import { GenreContext } from "../App";
 const Store = () => {
   const { page } = useParams();
   const { genres, setGenres } = useContext(GenreContext);
-  // const [genres, setGenres] = useState<Record<string, boolean>>({});
   const [filterGenres, setFilterGenres] = useState(false);
   const [showGenre, setShowGenre] = useState(true);
   const [stars, setStars] = useState(0);
   const [hoverStars, setHoverStars] = useState(0);
-
-  console.log(genres);
 
   const { data: games, isLoading } = useQuery({
     queryKey: ["games"],
@@ -38,10 +35,16 @@ const Store = () => {
   const handleRatingMouseMove = (e: React.MouseEvent, index: number) => {
     const item = e.currentTarget.getBoundingClientRect();
     const mouse = e.pageX;
+
+    // define areas for a third and two thirds of the length of a star
     const third = mouse - item.x > item.width * 0.33;
-    const two = mouse - item.x > item.width * 0.66;
-    const currStar = third ? (two ? 1 : 0.5) : 0;
+    const twoThirds = mouse - item.x > item.width * 0.66;
+
+    // define the current rating we should assign based on the start we're hovering
+    const currStar = third ? (twoThirds ? 1 : 0.5) : 0;
+
     setHoverStars(index + currStar);
+    console.log(index + currStar);
   };
 
   const handleShowGenres = () => {
@@ -66,13 +69,29 @@ const Store = () => {
     setGenres(newGenres);
   };
 
+  const handleClearGenres = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    const newGenres = genres;
+    Object.keys(newGenres).forEach((key) => (newGenres[key] = false));
+    setGenres(newGenres);
+    setFilterGenres(false);
+  };
+
   return (
     <>
       <div className="flex w-full grow-1 flex-row">
         <section className="flex w-72 flex-col gap-6 border-r-1 border-slate-800 p-6">
           <div className="flex flex-col gap-1">
             <div className="flex w-full cursor-pointer flex-row items-end justify-between pb-2" onClick={handleShowGenres}>
-              <h2 className="text-lg font-bold">Genre</h2>
+              <div className="flex flex-row items-end gap-2">
+                <h2 className="text-lg font-bold">Genre</h2>
+                {filterGenres && (
+                  <p className="text-slate-400 underline hover:text-slate-200" onClick={handleClearGenres}>
+                    clear
+                  </p>
+                )}
+              </div>
               {showGenre ? <ChevronDown /> : <ChevronUp />}
             </div>
             {showGenre && <GenreFilter genres={genres} handleGenres={handleGenres} />}
@@ -84,7 +103,7 @@ const Store = () => {
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="relative h-6 w-6" onMouseMove={(e) => handleRatingMouseMove(e, i)}>
                     {hoverStars == i + 0.5 && <StarHalf className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
-                    {hoverStars == i + 1 && <StarHalf className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
+                    {hoverStars >= i + 1 && <Star className="relative z-1 h-full w-full fill-slate-200 stroke-none" />}
                     <Star className="absolute inset-0 z-0 h-full w-full fill-slate-600 stroke-none" />
                   </div>
                 ))}
@@ -94,7 +113,7 @@ const Store = () => {
           </div>
         </section>
         <section className="flex grow-1 justify-stretch">
-          <div className="grid grow-1 grid-cols-[repeat(auto-fit,_minmax(230px,1fr))] justify-items-stretch gap-4 p-12">
+          <div className="grid grow-1 grid-cols-[repeat(auto-fit,_minmax(230px,1fr))] content-start justify-items-stretch gap-4 p-12">
             {isLoading ? (
               <>
                 {Array.from({ length: 20 }, (_, i) => (

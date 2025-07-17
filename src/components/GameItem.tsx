@@ -55,7 +55,7 @@ const GameItem = ({ title, image, genre, rating, id }: { title: string; image: s
   };
 
   return (
-    <div className="group item relative cursor-pointer">
+    <div className="group item relative h-fit cursor-pointer">
       <div
         className="group transition-scale aspect-16/9 w-full scale-100 overflow-hidden rounded-2xl bg-slate-800 bg-cover duration-200 ease-in-out group-hover:scale-104"
         style={bgStyle}
