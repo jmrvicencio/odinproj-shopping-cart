@@ -78,6 +78,13 @@ const Store = () => {
     setFilterGenres(false);
   };
 
+  const handleClearStars = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    setStars(0);
+    setHoverStars(0);
+  };
+
   return (
     <>
       <div className="flex w-full grow-1 flex-row">
@@ -96,8 +103,15 @@ const Store = () => {
             </div>
             {showGenre && <GenreFilter genres={genres} handleGenres={handleGenres} />}
           </div>
-          <div className="flex flex-col gap-1">
-            <h2 className="pb-2 text-lg font-bold">Rating</h2>
+          <div className="flex flex-col gap-1 pb-2">
+            <div className="flex flex-row items-end gap-2">
+              <h2 className="text-lg font-bold">Rating</h2>
+              {stars > 0 && (
+                <p className="text-slate-400 underline hover:text-slate-200" onClick={handleClearStars}>
+                  clear
+                </p>
+              )}
+            </div>
             <div className="flex flex-row gap-2">
               <div className="flex flex-row" onMouseLeave={handleRatingLeave} onClick={handleRatingClick}>
                 {[...Array(5)].map((_, i) => (
