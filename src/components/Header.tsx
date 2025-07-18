@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext, useRef } from "react";
+import { Link, useNavigate, createSearchParams } from "react-router-dom";
 import { Search, ShoppingCart, X } from "lucide-react";
 import { CartContext } from "../App";
 
@@ -7,6 +7,8 @@ const Header = ({ page }: { page: string }) => {
   const [search, setSearch] = useState("");
   const { cartItems } = useContext(CartContext);
   const cartLength = Object.keys(cartItems).length;
+  const searchInput = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -14,6 +16,20 @@ const Header = ({ page }: { page: string }) => {
 
   const handleClearSearch = () => {
     setSearch("");
+  };
+
+  const handleStartSearch = (e: React.KeyboardEvent) => {
+    if (e.key == "Escape") searchInput.current?.blur();
+    if (e.key == "Enter") {
+      const inputVal = searchInput.current?.value ?? "";
+      if (inputVal === "") return;
+
+      searchInput.current?.blur();
+      navigate({
+        pathname: "/store",
+        search: createSearchParams({ q: inputVal }).toString(),
+      });
+    }
   };
 
   return (
@@ -40,11 +56,13 @@ const Header = ({ page }: { page: string }) => {
       <div className="flex grow-1 justify-end gap-4">
         <div className="relative">
           <input
+            ref={searchInput}
             type="text"
             className={`${search == "" ? "" : "searching"} peer w-64 rounded-full border-1 border-slate-600 px-12 py-2 font-sans outline-slate-400 transition-[width] duration-300 ease-in-out placeholder:text-slate-500 focus:w-88 focus:outline-1 [.searching]:w-88`}
             placeholder="Search"
             value={search}
             onChange={handleSearch}
+            onKeyDown={handleStartSearch}
           />
           <Search className="absolute top-1/2 left-4 w-6 -translate-y-1/2 stroke-slate-600" />
           <X

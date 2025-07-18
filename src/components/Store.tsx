@@ -1,20 +1,32 @@
 import React, { useState, useContext } from "react";
-import { data, Outlet, useParams } from "react-router-dom";
+import { data, Outlet, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Star, StarHalf, Check, ChevronDown, ChevronUp } from "lucide-react";
 import GenreFilter from "./GenreFilter";
 import GameItem from "./GameItem";
 import { GenreContext } from "../App";
+import { useScrollLock } from "./Hooks";
+
+type Game = { name: string; background_image: string; rating: string; genres: Array<{ name: string }>; id: string };
 
 const Store = () => {
-  const { page } = useParams();
+  // Game Overlay
+  const [overlay, setOverlay] = useState<null | number>(null);
+
+  // Filters
+  const [searchParams] = useSearchParams();
   const { genres, setGenres } = useContext(GenreContext);
   const [filterGenres, setFilterGenres] = useState(false);
   const [showGenre, setShowGenre] = useState(true);
   const [stars, setStars] = useState(0);
   const [hoverStars, setHoverStars] = useState(0);
+  const scrollLock = useScrollLock();
 
-  const { data: games, isLoading } = useQuery({
+  if (searchParams.size > 0) {
+    console.log(searchParams.get("q"));
+  }
+
+  const { data: games, isLoading } = useQuery<Game[]>({
     queryKey: ["games"],
     staleTime: Infinity,
     queryFn: async ({ signal }) => {
@@ -85,8 +97,25 @@ const Store = () => {
     setHoverStars(0);
   };
 
+  const handleGameClicked = (id: number) => {
+    scrollLock(true);
+    setOverlay(id);
+  };
+
+  const handleCloseOverlay = () => {
+    scrollLock(false);
+    setOverlay(null);
+  };
+
   return (
     <>
+      {overlay != null && (
+        <div className="fixed z-1 flex h-full w-full justify-center bg-black/80 py-24" onClick={handleCloseOverlay}>
+          <div className="left-1/2 h-full w-full max-w-3xl overflow-clip rounded-4xl border-1 border-white">
+            <img src={games?.[overlay].background_image} />
+          </div>
+        </div>
+      )}
       <div className="flex w-full grow-1 flex-row">
         <section className="flex w-72 flex-col gap-6 border-r-1 border-slate-800 p-6">
           <div className="flex flex-col gap-1">
@@ -140,23 +169,31 @@ const Store = () => {
               </>
             ) : (
               <>
-                {games?.map(
-                  (
-                    game: { name: string; background_image: string; rating: string; genres: Array<{ name: string }>; id: string },
-                    i: number,
-                  ) => {
-                    const rating: number = game.rating ? parseInt(game.rating) : 0;
-                    const genre: string = game.genres[0] ? game.genres[0].name : "unkown";
+                {games?.map((game: Game, i: number) => {
+                  const rating: number = game.rating ? parseInt(game.rating) : 0;
+                  const genre: string = game.genres[0] ? game.genres[0].name : "unkown";
 
-                    // filters to hide game if the filter criteria are not met
-                    if (rating < stars) return null;
-                    if (filterGenres && !genres[genre]) return null;
+                  // filters to hide game if the filter criteria are not met
+                  if (rating < stars) return null;
+                  if (filterGenres && !genres[genre]) return null;
+                  if (searchParams.has("q")) {
+                    const query: string = searchParams.get("q") ?? "";
+                    const regex = new RegExp(query, "g");
+                    if (!regex.test(game.name)) return null;
+                  }
 
-                    return (
-                      <GameItem key={game.id} id={i} title={game.name} image={game.background_image} rating={game.rating} genre={genre} />
-                    );
-                  },
-                )}
+                  return (
+                    <GameItem
+                      handleClick={handleGameClicked}
+                      key={game.id}
+                      id={i}
+                      title={game.name}
+                      image={game.background_image}
+                      rating={game.rating}
+                      genre={genre}
+                    />
+                  );
+                })}
               </>
             )}
           </div>

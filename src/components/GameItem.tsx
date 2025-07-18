@@ -1,14 +1,35 @@
 import React, { useState, useRef, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Plus, Minus, Star } from "lucide-react";
 import { CartContext } from "../App";
 
-const GameItem = ({ title, image, genre, rating, id }: { title: string; image: string; genre: string; rating: string; id: number }) => {
+const GameItem = ({
+  title,
+  image,
+  genre,
+  rating,
+  id,
+  handleClick,
+}: {
+  title: string;
+  image: string;
+  genre: string;
+  rating: string;
+  id: number;
+  handleClick: (id: number) => void;
+}) => {
   const { cartItems, setCartItems } = useContext(CartContext);
   const currAmt = cartItems[id] ?? 0;
   const [amt, setAmt] = useState(0);
   const isAdded = cartItems[id] != null ? true : false;
   const amtField = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+
+  const handleGameClicked = () => {
+    console.log("game clicked");
+    console.log(id);
+    navigate(`${id}`);
+  };
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newAmt: string = e.target.value;
@@ -66,7 +87,7 @@ const GameItem = ({ title, image, genre, rating, id }: { title: string; image: s
   };
 
   return (
-    <div className="group item relative h-fit cursor-pointer">
+    <div className="group item relative h-fit cursor-pointer" onClick={() => handleClick(id)}>
       <div
         className="group transition-scale aspect-16/9 w-full scale-100 overflow-hidden rounded-2xl bg-slate-800 bg-cover duration-200 ease-in-out group-hover:scale-104"
         style={bgStyle}
