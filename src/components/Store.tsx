@@ -107,7 +107,7 @@ const Store = () => {
             <div className="flex flex-row items-end gap-2">
               <h2 className="text-lg font-bold">Rating</h2>
               {stars > 0 && (
-                <p className="text-slate-400 underline hover:text-slate-200" onClick={handleClearStars}>
+                <p className="cursor-pointer text-slate-400 underline hover:text-slate-200" onClick={handleClearStars}>
                   clear
                 </p>
               )}
