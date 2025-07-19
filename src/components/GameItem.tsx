@@ -2,6 +2,7 @@ import React, { useState, useRef, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Plus, Minus, Star } from "lucide-react";
 import { CartContext } from "../App";
+import AmtStepper from "./AmtStepper";
 
 const GameItem = ({
   title,
@@ -82,6 +83,14 @@ const GameItem = ({
     setCartItems(newCartItems);
   };
 
+  const handleIncrement = (amt: number) => {
+    const newAmt = currAmt + amt;
+    const newCartItems = { ...cartItems, [id]: newAmt };
+    if (newAmt == 0) delete newCartItems[id];
+
+    setCartItems(newCartItems);
+  };
+
   const bgStyle = {
     backgroundImage: `url('${image}')`,
   };
@@ -110,25 +119,14 @@ const GameItem = ({
             <p className="text-slate-400">{rating}</p>
           </div>
         </div>
-        <div
-          className={`group ${isAdded && "is-added"} absolute top-4 right-0 overflow-hidden rounded-full border-1 border-slate-500 px-1 opacity-0 transition-all duration-300 ease-in-out not-[.is-added]:border-orange-500 group-[.item:hover]:top-2 group-[.item:hover]:opacity-100 [.is-added]:top-2 [.is-added]:opacity-100`}
-        >
-          <div
-            className={`flex min-h-6 ${isAdded ? "w-18" : "w-4"} items-center justify-end gap-1 transition-[width] duration-300 ease-in-out`}
-            onClick={handleAmtClicked}
-          >
-            <Minus className={`${!isAdded && "hidden"} h-6 w-4 min-w-4 stroke-slate-200`} onClick={handleSubtract} />
-            <input
-              ref={amtField}
-              type="text"
-              className={`${!isAdded && "hidden"} w-8 items-center border-r-1 border-l-1 border-slate-500 text-center outline-none`}
-              onChange={handleInput}
-              value={currAmt}
-              onKeyDown={handleKeyDown}
-            />
-            <Plus className="h-6 w-4 min-w-4 not-group-[.is-added]:stroke-orange-500" onClick={handleAdd} />
-          </div>
-        </div>
+        <AmtStepper
+          amt={currAmt}
+          active={isAdded}
+          handleIncrement={handleIncrement}
+          handleInput={handleInput}
+          handleKeyDown={handleKeyDown}
+          handleAmtClicked={handleAmtClicked}
+        />
       </div>
     </div>
   );
