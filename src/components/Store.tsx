@@ -27,24 +27,6 @@ const Store = () => {
     console.log(searchParams.get("q"));
   }
 
-  // const { data: games, isLoading } = useQuery<Game[]>({
-  //   queryKey: ["games"],
-  //   staleTime: Infinity,
-  //   queryFn: async ({ signal }) => {
-  //     const res = await fetch("https://jsonfakery.com/games/random/50", { mode: "cors", signal });
-  //     const data = await res.json();
-  //     const newGenres: Record<string, boolean> = {};
-
-  //     data.forEach((item: { genres: Array<{ name: string }> }, i: number) => {
-  //       const currGenre = item.genres[0] ? item.genres[0].name : "unkown";
-  //       newGenres[currGenre] = false;
-  //     });
-
-  //     setGenres(newGenres);
-  //     return data;
-  //   },
-  // });
-
   const handleRatingMouseMove = (e: React.MouseEvent, index: number) => {
     const item = e.currentTarget.getBoundingClientRect();
     const mouse = e.pageX;

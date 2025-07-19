@@ -8,6 +8,7 @@ import Store from "./components/Store";
 import StoreRedirect from "./components/StoreRedirect";
 // import GamePage from "./components/GamePage";
 import Home from "./Home";
+import Cart from "./Cart";
 
 const routes = [
   {
@@ -43,7 +44,7 @@ const routes = [
       },
       {
         path: "cart",
-        element: <p>Cart</p>,
+        element: <Cart />,
       },
     ],
   },

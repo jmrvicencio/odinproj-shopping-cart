@@ -5,15 +5,15 @@ import Header from "./components/Header";
 import "./App.css";
 
 type Genre = Record<string, boolean>;
-type Item = Record<number, number>;
-export type Game = { name: string; background_image: string; rating: string; genres: Array<{ name: string }>; id: string };
+type Items = Record<number, number>;
+export type Game = { name: string; background_image: string; rating: string; genres: { name: string }[]; id: string };
 
 export const GenreContext = createContext<{ genres: Genre; setGenres: (x: Genre) => void }>({
   genres: {},
   setGenres: () => {},
 });
 
-export const CartContext = createContext<{ cartItems: Item; setCartItems: (x: Item) => void }>({
+export const CartContext = createContext<{ cartItems: Items; setCartItems: (item: Items) => void }>({
   cartItems: {},
   setCartItems: () => {},
 });

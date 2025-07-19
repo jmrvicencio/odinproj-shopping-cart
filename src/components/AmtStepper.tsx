@@ -20,13 +20,13 @@ const AmtStepper = ({
 
   return (
     <div
-      className={`group ${active && "is-added"} absolute top-4 right-0 overflow-hidden rounded-full border-1 border-slate-500 px-1 opacity-0 transition-all duration-300 ease-in-out not-[.is-added]:border-orange-500 group-[.item:hover]:top-2 group-[.item:hover]:opacity-100 [.is-added]:top-2 [.is-added]:opacity-100`}
+      className={`group ${active && "is-added"} relative top-4 h-fit overflow-hidden rounded-full border-1 border-slate-500 px-1 opacity-0 transition-all duration-300 ease-in-out not-[.is-added]:border-orange-500 group-[.item:hover]:top-2 group-[.item:hover]:opacity-100 [.is-added]:top-0 [.is-added]:opacity-100`}
     >
       <div
         className={`flex min-h-6 ${active ? "w-18" : "w-4"} items-center justify-end gap-1 transition-[width] duration-300 ease-in-out`}
         onClick={handleAmtClicked}
       >
-        <Minus className={`${!active && "hidden"} h-6 w-4 min-w-4 stroke-slate-200`} onClick={() => handleIncrement(-1)} />
+        <Minus className={`${!active && "hidden"} h-6 w-4 min-w-4 cursor-pointer stroke-slate-200`} onClick={() => handleIncrement(-1)} />
         <input
           ref={amtField}
           type="text"
@@ -35,7 +35,7 @@ const AmtStepper = ({
           value={amt}
           onKeyDown={handleKeyDown}
         />
-        <Plus className="h-6 w-4 min-w-4 not-group-[.is-added]:stroke-orange-500" onClick={() => handleIncrement(+1)} />
+        <Plus className="h-6 w-4 min-w-4 cursor-pointer not-group-[.is-added]:stroke-orange-500" onClick={() => handleIncrement(+1)} />
       </div>
     </div>
   );

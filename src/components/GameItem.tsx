@@ -68,23 +68,8 @@ const GameItem = ({
     e.stopPropagation();
   };
 
-  const handleAdd = () => {
-    const newAmt = currAmt + 1;
-    const newCartItems = { ...cartItems, [id]: newAmt };
-    setCartItems(newCartItems);
-  };
-
-  const handleSubtract = () => {
-    const newAmt = currAmt - 1;
-    const newCartItems = { ...cartItems, [id]: newAmt };
-    if (newAmt == 0) {
-      delete newCartItems[id];
-    }
-    setCartItems(newCartItems);
-  };
-
   const handleIncrement = (amt: number) => {
-    const newAmt = currAmt + amt;
+    const newAmt = Math.max(Math.min(currAmt + amt, 99), 0);
     const newCartItems = { ...cartItems, [id]: newAmt };
     if (newAmt == 0) delete newCartItems[id];
 
@@ -119,14 +104,16 @@ const GameItem = ({
             <p className="text-slate-400">{rating}</p>
           </div>
         </div>
-        <AmtStepper
-          amt={currAmt}
-          active={isAdded}
-          handleIncrement={handleIncrement}
-          handleInput={handleInput}
-          handleKeyDown={handleKeyDown}
-          handleAmtClicked={handleAmtClicked}
-        />
+        <div className="absolute top-2 right-0">
+          <AmtStepper
+            amt={currAmt}
+            active={isAdded}
+            handleIncrement={handleIncrement}
+            handleInput={handleInput}
+            handleKeyDown={handleKeyDown}
+            handleAmtClicked={handleAmtClicked}
+          />
+        </div>
       </div>
     </div>
   );
