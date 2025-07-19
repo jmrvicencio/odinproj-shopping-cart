@@ -63,6 +63,10 @@ const GameItem = ({
     }
   };
 
+  const handleAmtClicked = (e: MouseEvent) => {
+    e.stopPropagation();
+  };
+
   const handleAdd = () => {
     const newAmt = currAmt + 1;
     const newCartItems = { ...cartItems, [id]: newAmt };
@@ -111,6 +115,7 @@ const GameItem = ({
         >
           <div
             className={`flex min-h-6 ${isAdded ? "w-18" : "w-4"} items-center justify-end gap-1 transition-[width] duration-300 ease-in-out`}
+            onClick={handleAmtClicked}
           >
             <Minus className={`${!isAdded && "hidden"} h-6 w-4 min-w-4 stroke-slate-200`} onClick={handleSubtract} />
             <input
