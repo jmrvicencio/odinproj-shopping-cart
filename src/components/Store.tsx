@@ -4,14 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 import { Star, StarHalf, Check, ChevronDown, ChevronUp } from "lucide-react";
 import GenreFilter from "./GenreFilter";
 import GameItem from "./GameItem";
-import { GenreContext } from "../App";
+import { GenreContext, GamesContext, Game } from "../App";
 import { useScrollLock } from "./Hooks";
-
-type Game = { name: string; background_image: string; rating: string; genres: Array<{ name: string }>; id: string };
 
 const Store = () => {
   // Game Overlay
   const [overlay, setOverlay] = useState<null | number>(null);
+
+  // Games
+  const { games, isLoading } = useContext(GamesContext);
 
   // Filters
   const [searchParams] = useSearchParams();
@@ -26,23 +27,23 @@ const Store = () => {
     console.log(searchParams.get("q"));
   }
 
-  const { data: games, isLoading } = useQuery<Game[]>({
-    queryKey: ["games"],
-    staleTime: Infinity,
-    queryFn: async ({ signal }) => {
-      const res = await fetch("https://jsonfakery.com/games/random/50", { mode: "cors", signal });
-      const data = await res.json();
-      const newGenres: Record<string, boolean> = {};
+  // const { data: games, isLoading } = useQuery<Game[]>({
+  //   queryKey: ["games"],
+  //   staleTime: Infinity,
+  //   queryFn: async ({ signal }) => {
+  //     const res = await fetch("https://jsonfakery.com/games/random/50", { mode: "cors", signal });
+  //     const data = await res.json();
+  //     const newGenres: Record<string, boolean> = {};
 
-      data.forEach((item: { genres: Array<{ name: string }> }, i: number) => {
-        const currGenre = item.genres[0] ? item.genres[0].name : "unkown";
-        newGenres[currGenre] = false;
-      });
+  //     data.forEach((item: { genres: Array<{ name: string }> }, i: number) => {
+  //       const currGenre = item.genres[0] ? item.genres[0].name : "unkown";
+  //       newGenres[currGenre] = false;
+  //     });
 
-      setGenres(newGenres);
-      return data;
-    },
-  });
+  //     setGenres(newGenres);
+  //     return data;
+  //   },
+  // });
 
   const handleRatingMouseMove = (e: React.MouseEvent, index: number) => {
     const item = e.currentTarget.getBoundingClientRect();
