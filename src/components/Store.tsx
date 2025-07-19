@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { data, Outlet, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Star, StarHalf, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { Star, StarHalf, Check, ChevronDown, ChevronUp, ChevronRight, ChevronLeft } from "lucide-react";
 import GenreFilter from "./GenreFilter";
 import GameItem from "./GameItem";
 import { GenreContext, GamesContext, Game } from "../App";
@@ -94,9 +94,7 @@ const Store = () => {
     <>
       {overlay != null && (
         <div className="fixed z-1 flex h-full w-full justify-center bg-black/80 py-24" onClick={handleCloseOverlay}>
-          <div className="left-1/2 h-full w-full max-w-3xl overflow-clip rounded-4xl border-1 border-white">
-            <img src={games?.[overlay].background_image} />
-          </div>
+          <GameOverlay games={games} overlay={overlay} />
         </div>
       )}
       <div className="flex w-full grow-1 flex-row">
@@ -183,6 +181,65 @@ const Store = () => {
         </section>
       </div>
     </>
+  );
+};
+
+const GameOverlay = ({ games, overlay }: { games: Game[] | undefined; overlay: number }) => {
+  const game = games?.[overlay];
+  const [activeImage, setActiveImage] = useState<number>(0);
+  const screenshots = games?.[overlay].screenshots ?? [];
+
+  const handleIncrementImage = (increment: number) => {
+    const newActiveImage = activeImage + increment;
+    if (newActiveImage >= screenshots.length) setActiveImage(0);
+    else if (newActiveImage < 0) setActiveImage(screenshots.length - 1);
+    else setActiveImage(newActiveImage);
+  };
+
+  return (
+    <div
+      className="left-1/2 flex h-fit w-full max-w-3xl flex-col gap-4 overflow-clip rounded-4xl bg-slate-900"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="relative aspect-[16/9] h-fit w-full overflow-auto">
+        <div className="absolute inset-y-0 left-0 z-1 flex w-10 cursor-pointer items-center" onClick={() => handleIncrementImage(-1)}>
+          <ChevronLeft />
+        </div>
+        <div className="absolute inset-y-0 right-0 z-1 flex w-10 cursor-pointer items-center" onClick={() => handleIncrementImage(+1)}>
+          <ChevronRight />
+        </div>
+        <div className="flex-rows absolute bottom-2 z-1 flex w-full justify-center gap-1.5 self-center">
+          {games?.[overlay].screenshots.map((_, i) => {
+            return (
+              <div
+                key={i}
+                className={`${i == activeImage && "active"} h-2 w-2 cursor-pointer rounded-full bg-white/60 [.active]:bg-white`}
+                onClick={() => setActiveImage(i)}
+              />
+            );
+          })}
+        </div>
+        {games?.[overlay].screenshots.map((val, i) => {
+          const image = val.image_url;
+          return (
+            <div
+              key={i}
+              className={`${i == activeImage && "active"} absolute aspect-[16/9] w-full bg-slate-950 bg-cover not-[.active]:hidden`}
+              style={{ backgroundImage: `url('${image}')` }}
+            />
+          );
+        })}
+      </div>
+      <div className="mb-4 w-full px-8 py-2">
+        <h2 className="text-4xl font-bold">{game?.name}</h2>
+        <div className="mt-2 flex flex-row gap-4">
+          <p className="text-lg text-slate-200">{game?.genres[0]?.name ?? "Unkown"}</p>
+          <p className="text-lg text-slate-200">
+            <span className="text-base text-slate-400">Rating:</span> {game?.rating}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 

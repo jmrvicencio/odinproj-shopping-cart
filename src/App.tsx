@@ -6,7 +6,14 @@ import "./App.css";
 
 type Genre = Record<string, boolean>;
 type Items = Record<number, number>;
-export type Game = { name: string; background_image: string; rating: string; genres: { name: string }[]; id: string };
+export type Game = {
+  name: string;
+  background_image: string;
+  rating: string;
+  genres: { name: string }[];
+  id: string;
+  screenshots: { image_url: string }[];
+};
 
 export const GenreContext = createContext<{ genres: Genre; setGenres: (x: Genre) => void }>({
   genres: {},
