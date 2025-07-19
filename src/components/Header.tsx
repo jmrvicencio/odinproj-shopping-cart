@@ -70,17 +70,19 @@ const Header = ({ page }: { page: string }) => {
             onClick={handleClearSearch}
           />
         </div>
-        <div
-          className={`${cartLength > 0 && "cart-items"} group cart transition-gap relative flex h-10 cursor-pointer items-center gap-0 rounded-full border-1 border-slate-600 px-4 duration-300 ease-in-out [.cart-items]:gap-2`}
-        >
-          <div className="flex w-0 justify-center transition-all duration-300 ease-in-out group-[.cart-items]:w-4">
-            <p className="text-slate-400 not-group-[.cart-items]:hidden group-[.cart:hover]:text-slate-200">{cartLength}</p>
+        <Link to="cart">
+          <div
+            className={`${cartLength > 0 && "cart-items"} group cart transition-gap relative flex h-10 cursor-pointer items-center gap-0 rounded-full border-1 border-slate-600 px-4 duration-300 ease-in-out [.cart-items]:gap-2`}
+          >
+            <div className="flex w-0 justify-center transition-all duration-300 ease-in-out group-[.cart-items]:w-4">
+              <p className="text-slate-400 not-group-[.cart-items]:hidden group-[.cart:hover]:text-slate-200">{cartLength}</p>
+            </div>
+            <div className="relative">
+              <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-orange-400 not-group-[.cart-items]:hidden" />
+              <ShoppingCart className="w-6 stroke-slate-400 stroke-1 group-hover:stroke-slate-200" />
+            </div>
           </div>
-          <div className="relative">
-            <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-orange-400 not-group-[.cart-items]:hidden" />
-            <ShoppingCart className="w-6 stroke-slate-400 stroke-1 group-hover:stroke-slate-200" />
-          </div>
-        </div>
+        </Link>
       </div>
     </header>
   );

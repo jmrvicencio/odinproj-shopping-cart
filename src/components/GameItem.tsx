@@ -63,7 +63,7 @@ const GameItem = ({
     }
   };
 
-  const handleAmtClicked = (e: MouseEvent) => {
+  const handleAmtClicked = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
 

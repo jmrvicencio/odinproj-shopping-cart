@@ -156,7 +156,7 @@ const Store = () => {
           </div>
         </section>
         <section className="flex grow-1 justify-stretch">
-          <div className="grid grow-1 grid-cols-[repeat(auto-fit,_minmax(300px,1fr))] content-start justify-items-stretch gap-4 p-12">
+          <div className="grid grow-1 grid-cols-[repeat(auto-fit,minmax(300px,1fr))] content-start justify-items-stretch gap-4 p-12">
             {isLoading ? (
               <>
                 {Array.from({ length: 20 }, (_, i) => (
@@ -178,7 +178,7 @@ const Store = () => {
                   if (filterGenres && !genres[genre]) return null;
                   if (searchParams.has("q")) {
                     const query: string = searchParams.get("q") ?? "";
-                    const regex = new RegExp(query, "g");
+                    const regex = new RegExp(query, "i");
                     if (!regex.test(game.name)) return null;
                   }
 
